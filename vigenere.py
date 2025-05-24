@@ -27,7 +27,7 @@ linhaZ = ['z','a','b','c','d','e','f','g','h','i','j','k','l','m','n','o','p','q
 
 matriz = [linhaA, linhaB, linhaC, linhaD, linhaE, linhaF, linhaG, linhaH, linhaI, linhaJ, linhaK, linhaL, linhaM, 
           linhaN, linhaO, linhaP, linhaQ, linhaR, linhaS, linhaT, linhaU, linhaV, linhaW, linhaX, linhaY, linhaZ]
-
+#Portugues: 0.072
 #a = 14.63
 #b = 1.04
 #c = 3.88
@@ -55,7 +55,37 @@ matriz = [linhaA, linhaB, linhaC, linhaD, linhaE, linhaF, linhaG, linhaH, linhaI
 #y = 0.01
 #z = 0.47
 
-def remove_char_especial(texto):
+#Ingles: 0.066
+#a = 8.1
+#b = 1.4
+#c = 2.7
+#d = 4.2
+#e = 12.7
+#f = 2.2
+#g = 2.0
+#h = 6.0
+#i = 6.9
+#j = 0.1
+#k = 0.7
+#l = 4.0
+#m = 2.4
+#n = 6.7
+#o = 7.5
+#p = 1.9
+#q = 0.1
+#r = 5.9
+#s = 6.3
+#t = 9.0
+#u = 2.7
+#v = 0.9
+#w = 2.3
+#x = 0.1
+#y = 1.9
+#z = 0.1
+
+
+
+def remove_caractere_especial(texto):
     texto = texto.lower()
     texto = texto.replace(' ','')
     texto = texto.replace(',','')
@@ -65,6 +95,7 @@ def remove_char_especial(texto):
     texto = texto.replace('?','')
     texto = texto.replace('+','')
     texto = texto.replace('/','')
+    texto = texto.replace('—','')
     texto = texto.replace('\'','')
     texto = texto.replace('\"','')
     texto = texto.replace('á','a')
@@ -100,13 +131,10 @@ def remove_char_especial(texto):
 
     return texto
 
-def vigenere(mensagem, chave):
+def encrypt_vigenere(mensagem, chave):
     criptograma = ''
     i = 0
     for caractere in mensagem:
-        if(caractere == ' '):
-            criptograma = criptograma + ' '
-            continue
         ascii_msg   = ord(caractere)-ord('a')
         ascii_chave = ord(chave[i])-ord('a')
         criptograma = criptograma + matriz[ascii_chave][ascii_msg]
@@ -117,9 +145,6 @@ def decrypt_vigenere(criptograma, chave):
     mensagem_original = ''
     i = 0
     for caractere in criptograma:
-        if(caractere == ' '):
-            mensagem_original = mensagem_original + ' '
-            continue
         ascii_chave = ord(chave[i])-ord('a')
         for linha in matriz:
             if(linha[ascii_chave] == caractere):
@@ -182,18 +207,17 @@ def mostra_frequencias(criptograma, tamanho_chave):#Testa o indice de cada subte
             texto_deslocado = desloca_texto(subtexto,j)
             ocorrencias       = [0] * 26
             tamanho           = len(texto_deslocado)
-            print('deslocando pela letra: ' + chr(j + ord('a')))
+            print('Deslocando pela letra: ' + chr(j + ord('a')))
             for letra in texto_deslocado:
                 aux               =  ord(letra) - ord('a')
                 ocorrencias[aux] += 1
             for contador in range(26):
-                ocorrencias[contador] = round((ocorrencias[contador]/tamanho)*100, 3)
-            print('ocorrencias = ' + str(ocorrencias))
+                if(contador == 0 or contador == 4 or contador == 14 or contador == 17):
+                    ocorrencias[contador] = round((ocorrencias[contador]/tamanho)*100, 3)
+                else:                    
+                    ocorrencias[contador] = round((ocorrencias[contador]/tamanho)*100, 1)
+            print('Ocorrencias = ' + str(ocorrencias))
 
-            #indice_coincidencia = round(calcula_indice_coincidencia(texto_deslocado),3)
-            #print('texto deslocado = ' + texto_deslocado)
-            #print(chr((j-1)+ord('a')) + ': ' + str(indice_coincidencia))
-            
 print('Escolha se quer criptografar(1), ou descriptografar(2)')
 escolha = int(input())
 criptograma = ''
@@ -203,9 +227,9 @@ if(escolha == 1):
     mensagem = input()
     print('Digite a chave')
     chave = input()
-    mensagem = remove_char_especial(mensagem)
-    chave = remove_char_especial(chave)
-    criptograma = vigenere(mensagem, chave)
+    mensagem = remove_caractere_especial(mensagem)
+    chave = remove_caractere_especial(chave)
+    criptograma = encrypt_vigenere(mensagem, chave)
     mensagem_original = decrypt_vigenere(criptograma, chave)
     print('Criptograma = ' + criptograma)
 if(escolha == 2):
@@ -215,8 +239,12 @@ if(escolha == 2):
     print('Qual tamanho de chave mais se adequa?')
     tamanho_chave = int(input())
     mostra_frequencias(criptograma, tamanho_chave)
-    for i in range(tamanho_chave):
-        print('Escolha a ' + str(i+1) + 'º letra da chave')
-        chave += input()
-    print('Mensagem original = ')
-    print(decrypt_vigenere(criptograma, chave))
+    while(escolha == 2):
+        for i in range(tamanho_chave):
+            print('Escolha a ' + str(i+1) + 'º letra da chave')
+            chave += input()
+        print('Mensagem original = ')
+        print(decrypt_vigenere(criptograma, chave))
+        print('Se deu certo, digite 1, se deseja tentar uma chave diferente, digite 2')
+        escolha = int(input())
+        chave = ''
