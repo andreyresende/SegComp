@@ -28,8 +28,32 @@ linhaZ = ['z','a','b','c','d','e','f','g','h','i','j','k','l','m','n','o','p','q
 matriz = [linhaA, linhaB, linhaC, linhaD, linhaE, linhaF, linhaG, linhaH, linhaI, linhaJ, linhaK, linhaL, linhaM, 
           linhaN, linhaO, linhaP, linhaQ, linhaR, linhaS, linhaT, linhaU, linhaV, linhaW, linhaX, linhaY, linhaZ]
 
-frequencias_portugues = [14.63, 1.04, 3.88, 4.99, 12.57, 1.02, 1.3, 1.28, 6.18, 0.4, 0.02, 2.78, 4.74,
-                         5.05, 10.73, 2.52, 1.2, 6.53, 7.81, 4.34, 4.63, 1.67, 0.01, 0.21, 0.01, 0.47]
+#a = 14.63
+#b = 1.04
+#c = 3.88
+#d = 4.99
+#e = 12.57
+#f = 1.02
+#g = 1.3
+#h = 1.28
+#i = 6.18
+#j = 0.4
+#k = 0.02
+#l = 2.78
+#m = 4.74
+#n = 5.05
+#o = 10.73
+#p = 2.52
+#q = 1.2
+#r = 6.53
+#s = 7.81
+#t = 4.34
+#u = 4.63
+#v = 1.67
+#w = 0.01
+#x = 0.21
+#y = 0.01
+#z = 0.47
 
 def remove_char_especial(texto):
     texto = texto.lower()
@@ -148,22 +172,51 @@ def desloca_texto(texto, deslocamento):
     for letra in texto:
         cod_ascii_deslocado = (((ord(letra)-ord('a'))-deslocamento)%26)+ord('a')
         texto_deslocado += chr(cod_ascii_deslocado)
-    return texto_deslocado            
+    return texto_deslocado
 
-print('Digite a mensagem')
-mensagem = input()
-print('Digite a chave')
-chave = input()
+def mostra_frequencias(criptograma, tamanho_chave):#Testa o indice de cada subtexto sendo deslocado de 1 a 26 vezes para tentar descobrir qual letra foi usada na chave
+    subtextos = cria_subtextos(criptograma, tamanho_chave)
+    for i, subtexto in enumerate(subtextos):
+        print(str(i+1) + 'º Letra: ')
+        for j in range(0, 26):
+            texto_deslocado = desloca_texto(subtexto,j)
+            ocorrencias       = [0] * 26
+            tamanho           = len(texto_deslocado)
+            print('deslocando pela letra: ' + chr(j + ord('a')))
+            for letra in texto_deslocado:
+                aux               =  ord(letra) - ord('a')
+                ocorrencias[aux] += 1
+            for contador in range(26):
+                ocorrencias[contador] = round((ocorrencias[contador]/tamanho)*100, 3)
+            print('ocorrencias = ' + str(ocorrencias))
 
-mensagem = remove_char_especial(mensagem)
-chave = remove_char_especial(chave)
-
-criptograma = vigenere(mensagem, chave)
-mensagem_original = decrypt_vigenere(criptograma, chave)
-
-print('Criptograma = ' + criptograma)
-print('Mensagem = ' + mensagem_original)
-
-mostra_indices_coincidencia(criptograma)
-print('Qual tamanho de chave mais se adequa?')
-tamanho_chave = int(input())
+            #indice_coincidencia = round(calcula_indice_coincidencia(texto_deslocado),3)
+            #print('texto deslocado = ' + texto_deslocado)
+            #print(chr((j-1)+ord('a')) + ': ' + str(indice_coincidencia))
+            
+print('Escolha se quer criptografar(1), ou descriptografar(2)')
+escolha = int(input())
+criptograma = ''
+chave = ''
+if(escolha == 1):
+    print('Digite a mensagem')
+    mensagem = input()
+    print('Digite a chave')
+    chave = input()
+    mensagem = remove_char_especial(mensagem)
+    chave = remove_char_especial(chave)
+    criptograma = vigenere(mensagem, chave)
+    mensagem_original = decrypt_vigenere(criptograma, chave)
+    print('Criptograma = ' + criptograma)
+if(escolha == 2):
+    print('Digite o criptograma')
+    criptograma = input()
+    mostra_indices_coincidencia(criptograma)
+    print('Qual tamanho de chave mais se adequa?')
+    tamanho_chave = int(input())
+    mostra_frequencias(criptograma, tamanho_chave)
+    for i in range(tamanho_chave):
+        print('Escolha a ' + str(i+1) + 'º letra da chave')
+        chave += input()
+    print('Mensagem original = ')
+    print(decrypt_vigenere(criptograma, chave))
